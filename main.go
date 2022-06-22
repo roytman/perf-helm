@@ -70,7 +70,7 @@ func run(perf *Perf, iter int, namespace, chartName string) {
 		}
 		perf.getConfig[i] = toMilliseconds(start)
 		tmpDir, err := ioutil.TempDir("", "fybrik-helm-")
-		log.Println("before Pull")
+		log.Printf("before Pull %s\n", chartName)
 
 		start = time.Now()
 		err = helmer.Pull(cfg, chartName, tmpDir)
