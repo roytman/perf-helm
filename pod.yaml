@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: perf-helm
+spec:
+  containers:
+  - name: perf-helm
+    image: ghcr.io/roytman/perf-helm:latest
