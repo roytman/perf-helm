@@ -53,7 +53,7 @@ func toMilliseconds(t time.Time) int64 {
 	return int64(time.Since(t).Milliseconds())
 }
 
-func run(perf *Perf, iter int, namespace, chartName string) {
+func run(perf *Perf, iter int, namespace, chartName string, delay int) {
 	helmer := helm.NewHelmerImpl(true)
 	cfgG, err := helmer.GetConfig(namespace, log.Printf)
 	if err != nil {
@@ -62,6 +62,9 @@ func run(perf *Perf, iter int, namespace, chartName string) {
 	helmer.Uninstall(cfgG, RELEASE_NAME)
 
 	for i := 0; i < iter; i++ {
+
+		time.Sleep(time.Duration(delay) * time.Second)
+
 		fmt.Printf("iteration %d\n", i)
 		start := time.Now()
 		cfg, err := helmer.GetConfig(namespace, log.Printf)
@@ -189,14 +192,17 @@ func main() {
 	iterations := flag.Int("n", 100, "# of iterations")
 	namespace := flag.String("ns", NAMESPACE, "namespace")
 	debug := flag.Bool("d", false, "print debug messages")
+	delay := flag.Int("delay", 0, "post-uninstall delay")
 	flag.Parse()
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
 	if !*debug {
 		log.SetOutput(ioutil.Discard)
 	}
 
 	fmt.Printf("Start helmer performance test, # of iterations = %d, namespace %s, chart %s\n", *iterations, *namespace, *chart)
 	perf := newPerf(*iterations)
-	run(perf, *iterations, *namespace, *chart)
+	run(perf, *iterations, *namespace, *chart, *delay)
 	printStatistics(perf)
 
 }
